@@ -15,12 +15,41 @@ let carrito = {}
 
 document.addEventListener('DOMContentLoaded', e =>{ /*e ó () son lo mismo*/
   obtenerProductos()
+	if(localStorage.getItem('carrito')){
+		carrito = JSON.parse(localStorage.getItem('carrito'))
+		pintarCarrito()
+	}
 })
 
 cards.addEventListener('click', (e) => {
 	//console.log(e)
 	addCarrito(e)
 })
+
+items.addEventListener('click', (e) => {
+ btnAcciones(e)
+})
+
+const btnAcciones = e => {
+	if(e.target.classList.contains('btn-info')){
+		const producto = carrito[e.target.dataset.id]
+		producto.cantidad++
+		carrito[e.target.dataset.id] = {...producto}
+		pintarCarrito()
+	}
+
+	if(e.target.classList.contains('btn-danger')){
+		const producto = carrito[e.target.dataset.id]
+		producto.cantidad--
+		if(producto.cantidad === 0){
+			delete carrito[e.target.dataset.id]
+		}else{
+			carrito[e.target.dataset.id] = {...producto}
+		}
+		pintarCarrito()
+	}
+	e.stopPropagation()
+}////
 
 const addCarrito = (e) => {
 	if(e.target.classList.contains('btn-dark')){
@@ -66,8 +95,8 @@ const pintarCarrito = () => {
 		fragment.appendChild(clone)
 	})
 	items.appendChild(fragment)
-
 	pintarFooter()
+	localStorage.setItem('carrito', JSON.stringify(carrito))
 }
 
 const pintarFooter = () => {
